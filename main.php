@@ -52,9 +52,7 @@ function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.00
             for ($j = 0; $j < $numItems; $j++) {
                 if ($ratingsMatrix[$i][$j] > 0) { // Обрабатываем только существующие оценки
                     $error = $ratingsMatrix[$i][$j] - dotProduct($P[$i], $Q[$j]);
-                    if ($j == 10 && $i == 0){
-                        print_r(" ".$error." ");
-                    }
+
                     // Обновляем P и Q с учетом градиентного спуска
                     for ($kIndex = 0; $kIndex < $k; $kIndex++) {
                         $P[$i][$kIndex] += $alpha * ($error * $Q[$j][$kIndex] - $beta * $P[$i][$kIndex]);
@@ -89,8 +87,7 @@ function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.00
             break;
         }
     }
-    //printMatrix($P, "P");
-    //printMatrix($Q, "Q");
+
     // Результирующая матрица прогнозов
     $resultMatrix = [];
     for ($i = 0; $i < $numUsers; $i++) {

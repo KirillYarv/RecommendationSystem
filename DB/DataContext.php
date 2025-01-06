@@ -11,6 +11,8 @@ class PgConnect{
     }
     public function __construct()
     {
+        global $arParameter;
+        $arParameter = array();
         if(file_exists("DB/ConnectParameter.php")){
             require_once("DB/ConnectParameter.php");
         }
@@ -22,7 +24,7 @@ class PgConnect{
             []
         );
     }
-    public static function getInstance()
+    public static function getInstance(): PgConnect
     {
         if (is_null(self::$pgConnection)) {
             self::$pgConnection = new self();
