@@ -8,13 +8,23 @@ class PgQuery
     {
         $this->pgPDO = $pgConnection->getPDO();
     }
-    public function getUsers()
+    public function getList($tableName, $id = -1): array
     {
-        $result = $this->pgPDO->query("select * from \"Users\"");
-        while ($item = $result->fetch()) {
-            var_dump($item);
+        $resultArray = [];
+        try {
+            $result = $this->pgPDO->query($id != -1 ? "select * from \"{$tableName}\" where id = {$id}" : "select * from \"{$tableName}\"");
+            while ($item = $result->fetch()) {
+                $resultArray[] = $item;
+            }
+
+            return $id != -1 ? $resultArray[0] : $resultArray;
+        }
+        catch (Exception $e){
+            print_r($e);
+            return array();
         }
     }
+
     public function getSVDDataTable(): array
     {
         $result = $this->pgPDO->query("SELECT p.\"id\" as \"pid\", \"Product Name\", u.\"id\" as \"uid\", \"name\", rating FROM public.\"Product\" p inner join \"UserRating\" \"ur\" on \"productId\" = p.id inner join \"Users\" u on \"userId\" = u.id order by u.\"id\"");

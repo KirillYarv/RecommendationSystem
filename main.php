@@ -1,127 +1,28 @@
+
 <style>
     <?php include("styles/style.css")?>
 </style>
 <?php
-
+global $query;
+global$predictedMatrix;
+global$matrix;
 if (file_exists(".settings.php")){
     require_once(".settings.php");
 }
-
 if (file_exists("DB/DataContext.php")){
     require_once("DB/DataContext.php");
 }
 if (file_exists("DB/PgQuery.php")){
     require_once("DB/PgQuery.php");
 }
-
-
-// Функция для инициализации матриц
-function initializeMatrix($rows, $cols, $value = null) {
-    $matrix = [];
-    for ($i = 0; $i < $rows; $i++) {
-        $matrix[$i] = array_fill(0, $cols, $value ?? rand() / getrandmax());
-    }
-    return $matrix;
-}
-
-// Функция для транспонирования матрицы
-function transposeMatrix($matrix) {
-    $transposed = [];
-    foreach ($matrix as $row) {
-        foreach ($row as $colIndex => $value) {
-            $transposed[$colIndex][] = $value;
-        }
-    }
-    return $transposed;
-}
-
-// Основной алгоритм SVD
-function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.001, $beta = 0.05, $eps = 0.02) {
-    $numUsers = count($ratingsMatrix);
-    $numItems = count($ratingsMatrix[0]);
-
-    // Инициализируем матрицы P и Q
-    $P = initializeMatrix($numUsers, $k);
-    $Q = initializeMatrix($k, $numItems);
-
-    // Транспонируем Q для удобства вычислений
-    $Q = transposeMatrix($Q);
-    print_r($Q[7]);
-    for ($step = 0; $step < $steps; $step++) {
-        for ($i = 0; $i < $numUsers; $i++) {
-            for ($j = 0; $j < $numItems; $j++) {
-                if ($ratingsMatrix[$i][$j] > 0) { // Обрабатываем только существующие оценки
-                    $error = $ratingsMatrix[$i][$j] - dotProduct($P[$i], $Q[$j]);
-
-                    // Обновляем P и Q с учетом градиентного спуска
-                    for ($kIndex = 0; $kIndex < $k; $kIndex++) {
-                        $P[$i][$kIndex] += $alpha * ($error * $Q[$j][$kIndex] - $beta * $P[$i][$kIndex]);
-                        $Q[$j][$kIndex] += $alpha * ($error * $P[$i][$kIndex] - $beta * $Q[$j][$kIndex]);
-                    }
-                }
-            }
-        }
-
-        // Вычисляем текущую ошибку
-        $totalError = 0;
-        for ($i = 0; $i < $numUsers; $i++) {
-            for ($j = 0; $j < $numItems; $j++) {
-                if ($ratingsMatrix[$i][$j] > 0) {
-                    $totalError += pow($ratingsMatrix[$i][$j] - dotProduct($P[$i], $Q[$j]), 2);
-                    for ($kIndex = 0; $kIndex < $k; $kIndex++) {
-                        $totalError += ($beta / 2) * (pow($P[$i][$kIndex], 2) + pow($Q[$j][$kIndex], 2));
-                    }
-                }
-            }
-        }
-
-        echo $step." ".$totalError."\n";
-        // Выходим, если ошибка стала достаточно малой
-
-        unset($i);
-        unset($y);
-        //unset($step);
-
-        if ($totalError <= $eps) {
-
-            break;
-        }
-    }
-
-    // Результирующая матрица прогнозов
-    $resultMatrix = [];
-    for ($i = 0; $i < $numUsers; $i++) {
-        for ($j = 0; $j < $numItems; $j++) {
-            $resultMatrix[$i][$j] = dotProduct($P[$i], $Q[$j]);
-        }
-    }
-    unset($P);
-    unset($Q);
-    return $resultMatrix;
-}
-
-global $flag;
-$flag = false;
-// Функция для вычисления скалярного произведения двух векторов
-function dotProduct($vector1, $vector2) {
-    $dotProduct = 0;
-    global $flag;
-    if (!$flag)
-    {
-        //print_r($vector1);
-        //print_r($vector2);
-        $flag = true;
-    }
-    for ($i = 0; $i < count($vector1); $i++) {
-        $dotProduct += $vector1[$i] * $vector2[$i];
-    }
-    return $dotProduct;
+if (file_exists("controller.php")){
+    require_once("controller.php");
 }
 
 function printMatrix($matrix, $header = "") {
     echo "<table>";
     if ($header){
-            echo "<caption>".$header."</caption>";
+        echo "<caption>".$header."</caption>";
     }
 
     echo "<tr>";
@@ -141,62 +42,54 @@ function printMatrix($matrix, $header = "") {
     }
     echo "</table>";
 }
-function countNotNull($matrix)
+
+function printWeb($userIData, $productsRecIds, $products, )
 {
-    $count = 0;
-    foreach ($matrix as $i) {
-        foreach ($i as $y) {
-            if ($y > 0) {
-                $count++;
-            }
-        }
+    print_r("<h1>Имя текущего пользователя - ".$userIData["name"]."</h1>
+Логин текущего пользователя - ".$userIData["login"]."
+<br>Email текущего пользователя - ".$userIData["email"]);
+
+    print_r("<br>");
+
+    echo "<h2>Рекоммендованные товары</h2><ul>";
+    foreach ($productsRecIds as $key => $item){
+        print_r("<li>\"".$products[$item]["Product Name"]."\"
+<ul><li>Бренд - ".$products[$item]["BrandName"]."
+</li><li>Цена - ".$products[$item]["MRP"]."
+</li><li>Размер - ".$products[$item]["Product Size"]."
+</li><li>Категория - ".$products[$item]["Category"]."</li></ul></li>"
+        );
     }
-    return $count;
+    echo "</ul>";
 }
-function countSeven($matrix)
-{
-    $count = 0;
-    foreach ($matrix as $i) {
-        foreach ($i as $y) {
-            if (round($y) >= 9) {
-                $count++;
-            }
-        }
-    }
-    return $count;
+?>
+
+
+<form action="" method="post">
+    <label for="userId">Введите id пользователя</label><br>
+    <input type="text" id="userId" name="userId" value="0"><br>
+    <input type="submit" value="Submit">
+</form>
+
+<?php
+$userI = 0;
+if($_POST["userId"]) {
+    $userI = $_POST["userId"];
 }
-// Пример использования
-$ratingsMatrix = [
-    [10, 7, 0, 3],
-    [8, 0, 0, 1],
-    [3, 1, 0, 10],
-    [0, 0, 5, 4],
-    [0, 9, 4, 0]
-];
+$userIData = $query->getList("Users",$userI+1);
 
-$matrix = json_decode(file_get_contents("cache/matrix.json"));
-if (!$matrix) {
-    $query = new PgQuery(PGCONNECT);
+$productsRecIds = getRecommendation($matrix, $predictedMatrix, $userI);
 
-    $matrix = $query->getSVDDataTable();
-    file_put_contents("cache/matrix.json", json_encode($matrix));
+$maxRating = 10;
+
+//даём хоть какие-нибудь рекомендации
+while (!$productsRecIds) {
+    $productsRecIds = getRecommendation($matrix, $predictedMatrix, $userI, --$maxRating);
 }
 
-//print_r($matrix);
-//printMatrix($ratingsMatrix, "Исходные данные");
-print_r(countNotNull($matrix));
+$products = $query->getList("Product");
 
-$predictedMatrix = json_decode(file_get_contents("cache/predicted.json"));
-if (!$predictedMatrix) {
-    $predictedMatrix = svdRecommendations($matrix);
+//print_r($userIData);
+printWeb($userIData, $productsRecIds, $products);
 
-    file_put_contents("cache/predicted.json", json_encode($predictedMatrix));
-}
-
-var_dump($matrix[0]);
-var_dump($predictedMatrix[0]);
-
-print_r(countSeven($predictedMatrix));
-
-//printMatrix($predictedMatrix, "Прогнозируемые значения");
-
+print_r("<br>*** Текущий максимальный рейтинг {$maxRating}");
