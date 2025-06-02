@@ -1,15 +1,12 @@
 <?php
-
-
 class PgConnect{
     private static $pgConnection;
-
     private $pgPDO;
-    public function getPDO()
+    public function getPDO(): PDO
     {
         return $this->pgPDO;
     }
-    public function __construct()
+    private function __construct()
     {
         global $arParameter;
         $arParameter = array();
@@ -32,4 +29,5 @@ class PgConnect{
         return self::$pgConnection;
     }
 }
-const PGCONNECT = new PgConnect();
+
+define("PGCONNECT", PgConnect::getInstance());

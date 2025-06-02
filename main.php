@@ -1,11 +1,13 @@
-
 <style>
     <?php include("styles/style.css")?>
 </style>
+
 <?php
 global $query;
-global$predictedMatrix;
-global$matrix;
+global $predictedMatrix;
+global $matrix;
+
+
 if (file_exists(".settings.php")){
     require_once(".settings.php");
 }
@@ -43,11 +45,36 @@ function printMatrix($matrix, $header = "") {
     echo "</table>";
 }
 
-function printWeb($userIData, $productsRecIds, $products, )
+function printWeb($userIData, $productsRecIds, $products)
 {
+    global $matrix;
+
     print_r("<h1>Имя текущего пользователя - ".$userIData["name"]."</h1>
 Логин текущего пользователя - ".$userIData["login"]."
 <br>Email текущего пользователя - ".$userIData["email"]);
+
+    print_r("<br>");
+
+    echo "<h2>Товары</h2>";
+    echo "<div class='product-list'><table><tr>";
+    foreach ($products as $key => $item){
+        if ($matrix[$userIData["id"]-1][$key]){
+            print_r("<th>\"".$item["Product Name"]."\"
+    (".$matrix[$userIData["id"]-1][$key].")</th>");
+        }
+    }
+    echo "</tr><tr>";
+    foreach ($products as $key => $item){
+        if($matrix[$userIData["id"]-1][$key]) {
+                print_r("<td><b>Бренд</b> - " . $item["BrandName"] . "
+    <br><b>Цена </b>- " . $item["MRP"] . "
+    <br><b>Размер </b>- " . $item["Product Size"] . "
+    <br><b>Категория </b>- " . $item["Category"] . "</td>"
+            );
+        }
+    }
+    echo "</tr>";
+    echo "</table></div>";
 
     print_r("<br>");
 
@@ -84,10 +111,12 @@ $maxRating = 10;
 
 //даём хоть какие-нибудь рекомендации
 while (!$productsRecIds) {
+    print_r("Максимальный рейтинг - ".$maxRating."<br>");
     $productsRecIds = getRecommendation($matrix, $predictedMatrix, $userI, --$maxRating);
 }
-
+print_r("Максимальный рейтинг - ".$maxRating);
 $products = $query->getList("Product");
+
 
 //print_r($userIData);
 printWeb($userIData, $productsRecIds, $products);

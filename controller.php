@@ -1,7 +1,8 @@
 <?php
 
 // Функция для инициализации матриц
-function initializeMatrix($rows, $cols, $value = null) {
+function initializeMatrix($rows, $cols, $value = null): array
+{
     $matrix = [];
     for ($i = 0; $i < $rows; $i++) {
         $matrix[$i] = array_fill(0, $cols, $value ?? rand() / getrandmax());
@@ -10,7 +11,8 @@ function initializeMatrix($rows, $cols, $value = null) {
 }
 
 // Функция для транспонирования матрицы
-function transposeMatrix($matrix) {
+function transposeMatrix($matrix): array
+{
     $transposed = [];
     foreach ($matrix as $row) {
         foreach ($row as $colIndex => $value) {
@@ -21,7 +23,8 @@ function transposeMatrix($matrix) {
 }
 
 // Основной алгоритм SVD
-function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.001, $beta = 0.05, $eps = 0.02) {
+function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.001, $beta = 0.05, $eps = 0.02): array
+{
     $numUsers = count($ratingsMatrix);
     $numItems = count($ratingsMatrix[0]);
 
@@ -31,7 +34,7 @@ function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.00
 
     // Транспонируем Q для удобства вычислений
     $Q = transposeMatrix($Q);
-    print_r($Q[7]);
+
     for ($step = 0; $step < $steps; $step++) {
         for ($i = 0; $i < $numUsers; $i++) {
             for ($j = 0; $j < $numItems; $j++) {
@@ -61,14 +64,11 @@ function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.00
         }
 
         echo $step." ".$totalError."<br>";
-        // Выходим, если ошибка стала достаточно малой
-
         unset($i);
         unset($y);
-        //unset($step);
 
+        // Выходим, если ошибка стала достаточно малой
         if ($totalError <= $eps) {
-
             break;
         }
     }
@@ -85,23 +85,17 @@ function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.00
     return $resultMatrix;
 }
 
-global $flag;
-$flag = false;
+
 // Функция для вычисления скалярного произведения двух векторов
-function dotProduct($vector1, $vector2) {
+function dotProduct($vector1, $vector2): float|int
+{
     $dotProduct = 0;
-    global $flag;
-    if (!$flag)
-    {
-        //print_r($vector1);
-        //print_r($vector2);
-        $flag = true;
-    }
     for ($i = 0; $i < count($vector1); $i++) {
         $dotProduct += $vector1[$i] * $vector2[$i];
     }
     return $dotProduct;
 }
+
 
 function countNotNull($matrix)
 {
