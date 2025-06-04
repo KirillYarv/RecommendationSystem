@@ -122,3 +122,37 @@ $products = $query->getList("Product");
 printWeb($userIData, $productsRecIds, $products);
 
 print_r("<br>*** Текущий максимальный рейтинг {$maxRating}");
+?>
+
+<h1>С этим товаром также покупают</h1>
+<form action="" method="post">
+    <label for="productId">Введите id товара</label><br>
+    <input type="text" id="productId" name="productId" value="0"><br>
+    <input type="submit" value="Submit">
+</form>
+<?php
+$productI = 0;
+if($_POST["productId"]) {
+    $productI = $_POST["productId"];
+}
+$productsARL = getARLRecommendation($products, $productI);
+//print_r("<br>");
+if($productsARL) {
+    echo "<h2>Товары</h2>";
+    echo "<div class='product-list'><table><tr>";
+    foreach ($productsARL as $key => $item) {
+        print_r("<th>\"" . $item["Product Name"]);
+    }
+    echo "</tr><tr>";
+    foreach ($productsARL as $key => $item) {
+
+        print_r("<td><b>Бренд</b> - " . $item["BrandName"] . "
+    <br><b>Цена </b>- " . $item["MRP"] . "
+    <br><b>Размер </b>- " . $item["Product Size"] . "
+    <br><b>Категория </b>- " . $item["Category"] . "</td>"
+        );
+
+    }
+    echo "</tr>";
+    echo "</table></div>";
+}

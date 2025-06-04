@@ -135,6 +135,65 @@ function getRecommendation($matrix, $predictedMatrix, $userId, $maxRating=10)
     }
     return $productIds;
 }
+
+function findProductByName(string $name, array $products)
+{
+    $products_copy = array_merge([], $products);
+
+    $name = str_replace(' ','', $name);
+    foreach ($products_copy as $key => $product) {
+        $product["Product Name"] = str_replace(' ','', $product["Product Name"]);
+        if($product["Product Name"]===$name){
+            return $product;
+        }
+    }
+    return null;
+}
+function findProductById(int $id, array $products)
+{
+    foreach ($products as $key => $product) {
+        if($key===$id){
+            return $product["Product Name"];
+        }
+    }
+    return null;
+}
+function findProductAssociation(string $productName, array $dataARL)
+{
+    $productName = str_replace(' ','', $productName);
+
+    foreach ($dataARL as $key => $item) {
+        foreach ($item as $keyItem => $product){
+            $product = str_replace(' ','', $product);
+            if($productName==$product){
+                return array_splice($item, $keyItem, 1);
+            }
+        }
+    }
+
+//    var_dump(str_replace(' ','', $productName)==str_replace(' ','', $dataARL[0]->left));
+//    var_dump(str_replace(' ','', $productName));
+//    var_dump(str_replace(' ','', $dataARL[0]->left));
+    return null;
+}
+function getARLRecommendation(array $products, int $id) : array
+{
+    $json = file_get_contents("http://127.0.0.1:8000/api/ARLs");
+    if (!$json){ return [];}
+    $dataJSON = json_decode($json);
+//285
+    $foundProductName = findProductById($id, $products);
+    //echo "<br>".$foundProductName."<br>";
+    $association = findProductAssociation($foundProductName, $dataJSON);
+    //echo '<br> ARL:'.$association;
+    if (!$association){return [];}
+    $result = [];
+    foreach ($association as $item) {
+        $result[] = findProductByName($item, $products);
+    }
+    return $result;
+}
+
 $arResult = [];
 $query = new PgQuery(PGCONNECT);
 
