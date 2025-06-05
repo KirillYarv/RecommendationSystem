@@ -166,7 +166,8 @@ function findProductAssociation(string $productName, array $dataARL)
         foreach ($item as $keyItem => $product){
             $product = str_replace(' ','', $product);
             if($productName==$product){
-                return array_splice($item, $keyItem, 1);
+                unset($item[$keyItem]);
+                return $item;
             }
         }
     }
