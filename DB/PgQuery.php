@@ -12,7 +12,7 @@ class PgQuery
     {
         $resultArray = [];
         try {
-            $result = $this->pgPDO->query($id != -1 ? "select * from \"{$tableName}\" where id = {$id}" : "select * from \"{$tableName}\"");
+            $result = $this->pgPDO->query($id != -1 ? "select * from \"$tableName\" where id = $id" : "select * from \"$tableName\"");
             while ($item = $result->fetch()) {
                 $resultArray[] = $item;
             }

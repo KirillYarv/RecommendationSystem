@@ -1,6 +1,12 @@
 <?php
 
 // Функция для инициализации матриц
+/**
+ * @param $rows
+ * @param $cols
+ * @param $value
+ * @return array
+ */
 function initializeMatrix($rows, $cols, $value = null): array
 {
     $matrix = [];
@@ -11,6 +17,10 @@ function initializeMatrix($rows, $cols, $value = null): array
 }
 
 // Функция для транспонирования матрицы
+/**
+ * @param $matrix
+ * @return array
+ */
 function transposeMatrix($matrix): array
 {
     $transposed = [];
@@ -23,6 +33,15 @@ function transposeMatrix($matrix): array
 }
 
 // Основной алгоритм SVD
+/**
+ * @param $ratingsMatrix
+ * @param $k
+ * @param $steps
+ * @param $alpha
+ * @param $beta
+ * @param $eps
+ * @return array
+ */
 function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.001, $beta = 0.05, $eps = 0.02): array
 {
     $numUsers = count($ratingsMatrix);
@@ -97,19 +116,6 @@ function dotProduct($vector1, $vector2): float|int
 }
 
 
-function countNotNull($matrix)
-{
-    $count = 0;
-    foreach ($matrix as $i) {
-        foreach ($i as $y) {
-            if ($y > 0) {
-                $count++;
-            }
-        }
-    }
-    return $count;
-}
-
 function getUserKnowingRatings($matrix, $userId): array
 {
     $result = [];
@@ -136,6 +142,11 @@ function getRecommendation($matrix, $predictedMatrix, $userId, $maxRating=10)
     return $productIds;
 }
 
+/**
+ * @param string $name
+ * @param array $products
+ * @return mixed|null
+ */
 function findProductByName(string $name, array $products)
 {
     $products_copy = array_merge([], $products);
@@ -158,25 +169,33 @@ function findProductById(int $id, array $products)
     }
     return null;
 }
-function findProductAssociation(string $productName, array $dataARL)
+
+/**
+ * @param string $productName
+ * @param array $dataARL
+ * @return array
+ */
+function findProductAssociation(string $productName, array $dataARL): array
 {
     $productName = str_replace(' ','', $productName);
-
+    $result = [];
     foreach ($dataARL as $key => $item) {
         foreach ($item as $keyItem => $product){
             $product = str_replace(' ','', $product);
             if($productName==$product){
                 unset($item[$keyItem]);
-                return $item;
+                $result = array_merge($result, $item);
             }
         }
     }
-
-//    var_dump(str_replace(' ','', $productName)==str_replace(' ','', $dataARL[0]->left));
-//    var_dump(str_replace(' ','', $productName));
-//    var_dump(str_replace(' ','', $dataARL[0]->left));
-    return null;
+    return $result;
 }
+
+/**
+ * @param array $products
+ * @param int $id
+ * @return array
+ */
 function getARLRecommendation(array $products, int $id) : array
 {
     $json = file_get_contents("http://127.0.0.1:8000/api/ARLs");

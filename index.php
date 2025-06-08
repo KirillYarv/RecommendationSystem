@@ -21,31 +21,13 @@ if (file_exists("controller.php")){
     require_once("controller.php");
 }
 
-function printMatrix($matrix, $header = "") {
-    echo "<table>";
-    if ($header){
-        echo "<caption>".$header."</caption>";
-    }
-
-    echo "<tr>";
-    echo "<th> u/p</th>";
-    for ($i = 0; $i < count($matrix[0]); $i++) {
-        echo "<th> ".($i+1)." </th>";
-    }
-    echo "</tr>";
-
-    for ($i = 0; $i < count($matrix); $i++) {
-        echo "<tr><th> ".($i+1)." </th>>";
-
-        for ($y = 0; $y < count($matrix[$i]); $y++) {
-            echo "<td>".$matrix[$i][$y]."</td>";
-        }
-        echo "</tr>";
-    }
-    echo "</table>";
-}
-
-function printWeb($userIData, $productsRecIds, $products)
+/**
+ * @param $userIData
+ * @param $productsRecIds
+ * @param $products
+ * @return void
+ */
+function printWeb($userIData, $productsRecIds, $products): void
 {
     global $matrix;
 
@@ -79,7 +61,7 @@ function printWeb($userIData, $productsRecIds, $products)
     print_r("<br>");
 
     echo "<h2>Рекоммендованные товары</h2><ul>";
-    foreach ($productsRecIds as $key => $item){
+    foreach ($productsRecIds as $item){
         print_r("<li>\"".$products[$item]["Product Name"]."\"
 <ul><li>Бренд - ".$products[$item]["BrandName"]."
 </li><li>Цена - ".$products[$item]["MRP"]."
@@ -121,7 +103,7 @@ $products = $query->getList("Product");
 //print_r($userIData);
 printWeb($userIData, $productsRecIds, $products);
 
-print_r("<br>*** Текущий максимальный рейтинг {$maxRating}");
+print_r("<br>*** Текущий максимальный рейтинг $maxRating");
 ?>
 
 <h1>С этим товаром также покупают</h1>
