@@ -2,13 +2,22 @@
 
 class PgQuery
 {
-    private $pgPDO;
+    private PDO $pgPDO;
 
-    public function __construct($pgConnection)
+    /**
+     * @param PgConnect $pgConnection
+     */
+    public function __construct(PgConnect $pgConnection)
     {
         $this->pgPDO = $pgConnection->getPDO();
     }
-    public function getList($tableName, $id = -1): array
+
+    /**
+     * @param string $tableName
+     * @param int $id
+     * @return array
+     */
+    public function getList(string $tableName, int $id = -1): array
     {
         $resultArray = [];
         try {
@@ -25,6 +34,9 @@ class PgQuery
         }
     }
 
+    /**
+     * @return array
+     */
     public function getSVDDataTable(): array
     {
         $result = $this->pgPDO->query("SELECT p.\"id\" as \"pid\", \"Product Name\", u.\"id\" as \"uid\", \"name\", rating FROM public.\"Product\" p inner join \"UserRating\" \"ur\" on \"productId\" = p.id inner join \"Users\" u on \"userId\" = u.id order by u.\"id\"");

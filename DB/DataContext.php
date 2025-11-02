@@ -6,6 +6,10 @@ class PgConnect{
     {
         return $this->pgPDO;
     }
+
+    /**
+     * @throws Exception
+     */
     private function __construct()
     {
         global $env;
@@ -23,6 +27,10 @@ class PgConnect{
             []
         );
     }
+
+    /**
+     * @return PgConnect
+     */
     public static function getInstance(): PgConnect
     {
         if (is_null(self::$pgConnection)) {

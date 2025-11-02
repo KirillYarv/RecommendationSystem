@@ -1,13 +1,15 @@
 <?php
 
-// Функция для инициализации матриц
+declare(strict_types=1);
+
 /**
- * @param $rows
- * @param $cols
- * @param $value
+ * Функция для инициализации матриц
+ * @param int $rows
+ * @param int $cols
+ * @param null $value
  * @return array
  */
-function initializeMatrix($rows, $cols, $value = null): array
+function initializeMatrix(int $rows, int $cols, $value = null): array
 {
     $matrix = [];
     for ($i = 0; $i < $rows; $i++) {
@@ -16,12 +18,12 @@ function initializeMatrix($rows, $cols, $value = null): array
     return $matrix;
 }
 
-// Функция для транспонирования матрицы
 /**
- * @param $matrix
+ * Функция для транспонирования матрицы
+ * @param array $matrix
  * @return array
  */
-function transposeMatrix($matrix): array
+function transposeMatrix(array $matrix): array
 {
     $transposed = [];
     foreach ($matrix as $row) {
@@ -32,17 +34,22 @@ function transposeMatrix($matrix): array
     return $transposed;
 }
 
-// Основной алгоритм SVD
 /**
+ * Основной алгоритм SVD
  * @param $ratingsMatrix
- * @param $k
- * @param $steps
- * @param $alpha
- * @param $beta
- * @param $eps
+ * @param int $k
+ * @param int $steps
+ * @param float $alpha
+ * @param float $beta
+ * @param float $eps
  * @return array
  */
-function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.001, $beta = 0.05, $eps = 0.02): array
+function svdRecommendations($ratingsMatrix,
+                            int $k = 5,
+                            int $steps = 1000,
+                            float $alpha = 0.001,
+                            float $beta = 0.05,
+                            float $eps = 0.02): array
 {
     $numUsers = count($ratingsMatrix);
     $numItems = count($ratingsMatrix[0]);
@@ -105,8 +112,13 @@ function svdRecommendations($ratingsMatrix, $k = 5, $steps = 1000, $alpha = 0.00
 }
 
 
-// Функция для вычисления скалярного произведения двух векторов
-function dotProduct($vector1, $vector2): float|int
+/**
+ * Функция для вычисления скалярного произведения двух векторов
+ * @param array $vector1
+ * @param array $vector2
+ * @return float|int
+ */
+function dotProduct(array $vector1, array $vector2): float|int
 {
     $dotProduct = 0;
     for ($i = 0; $i < count($vector1); $i++) {
@@ -116,7 +128,13 @@ function dotProduct($vector1, $vector2): float|int
 }
 
 
-function getUserKnowingRatings($matrix, $userId): array
+/**
+ * Получение id значений товара, которым пользователь поставил оценку
+ * @param array $matrix
+ * @param int $userId
+ * @return array
+ */
+function getUserKnowingRatings(array $matrix, int $userId): array
 {
     $result = [];
     foreach ($matrix[$userId] as $key => $item) {
@@ -127,7 +145,15 @@ function getUserKnowingRatings($matrix, $userId): array
     return $result;
 }
 
-function getRecommendation($matrix, $predictedMatrix, $userId, $maxRating=10)
+/**
+ * Получение 3ёх товаров с наибольшим рейтингом
+ * @param array $matrix
+ * @param array $predictedMatrix
+ * @param int $userId
+ * @param int $maxRating
+ * @return array
+ */
+function getRecommendation(array $matrix, array $predictedMatrix, int $userId, int $maxRating=10): array
 {
     $knowingRatingIds = getUserKnowingRatings($matrix, $userId);
     $count = 0;
@@ -145,9 +171,9 @@ function getRecommendation($matrix, $predictedMatrix, $userId, $maxRating=10)
 /**
  * @param string $name
  * @param array $products
- * @return mixed|null
+ * @return array|null
  */
-function findProductByName(string $name, array $products)
+function findProductByName(string $name, array $products): array|null
 {
     $products_copy = array_merge([], $products);
 
@@ -160,7 +186,13 @@ function findProductByName(string $name, array $products)
     }
     return null;
 }
-function findProductById(int $id, array $products)
+
+/**
+ * @param int $id
+ * @param array $products
+ * @return array|null
+ */
+function findProductById(int $id, array $products): array|null
 {
     foreach ($products as $key => $product) {
         if($key===$id){
@@ -192,6 +224,7 @@ function findProductAssociation(string $productName, array $dataARL): array
 }
 
 /**
+ *
  * @param array $products
  * @param int $id
  * @return array
